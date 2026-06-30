@@ -1,0 +1,74 @@
+# =============================================
+# PID GAINS CONFIGURATION
+# =============================================
+# Mecanum Bot PID Controller Parameters
+#
+# TUNING GUIDE:
+# 1. Start with all gains at 0
+# 2. Increase Kp until you see oscillation, then reduce by 50%
+# 3. If steady-state error exists, slowly add Ki
+# 4. Add small Kd to reduce overshoot
+# =============================================
+
+pid_controller_node:
+  ros__parameters:
+
+    # =========================================
+    # INDIVIDUAL WHEEL VELOCITY PID
+    # =========================================
+    # RESETTING TO MINIMAL FOR TUNING JOURNEY
+    wheel_velocity_pid:
+      kp: 0.0                    # Robocon Fix: Open-loop
+      ki: 0.0                    # Robocon Fix: Open-loop
+      kd: 0.0                    # Robocon Fix: Open-loop
+      max_integral: 1.0
+      output_limit: 1.5
+
+    # =========================================
+    # PID UPDATE RATE
+    # =========================================
+    control_frequency: 100.0
+
+    # =========================================
+    # DEAD ZONE AND FILTERING
+    # =========================================
+    # INCREASED to 0.1 to guarantee "Instant Stop" and kill stick-drift
+    velocity_deadzone: 0.1
+    angular_deadzone: 0.1
+    max_accel_linear: 15.0        # Robocon Fix: Snappy Accel
+    max_accel_angular: 15.0       # Robocon Fix: Fast Rotation
+    max_decel_linear: 50.0       # Robocon Fix: Instant Stop
+    max_decel_angular: 50.0      # Robocon Fix: Instant Stop
+    wheel_pid_target_deadzone: 0.05
+
+    # DISCOVERED DEADBAND OFFSET (m/s)
+    motor_deadband_offset: 0.85
+
+    # Aggressive sync requires less filtering
+    velocity_filter_alpha: 0.8
+    imu_filter_alpha: 0.5
+
+yaw_manager_node:
+  ros__parameters:
+    control_frequency: 100.0
+    imu_yaw_offset: 0.0
+    angular_deadzone: 0.01
+
+    # Heading hold (DISABLED)
+    yaw_kp: 6.8
+    yaw_ki: 0.3
+    yaw_kd: 0.4
+    yaw_output_limit: 3.0
+    yaw_min_output: 0.0
+    yaw_correction_sign: 1.0
+    yaw_hold_deadband_deg: 0.8   # Robocon Fix: Ignore Noise
+
+    # One-shot 90 degree rotation requests
+    rotation_kp: 5.8
+#   rotation_ki: 0.1
+    rotation_kd: 0.6
+    rotation_speed_limit: 3.0
+    rotation_tolerance_deg: 1.0
+    rotation_slowdown_deg: 10.0
+    rotation_timeout: 999.0
+    imu_timeout: 0.5
