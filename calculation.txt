@@ -1,0 +1,18 @@
+
+Max_velocity signals calculations: 
+
+main_supply = 18V = 700 = 11.66 rev/sec = ~8.05 m/s
+max_supply = 7.4V = 41.1%  = 288 RPM = 4.8 rev/sec = 3.31 m/s
+max_RPM= 700 
+
+max_supply = 7.4V = 100% = 288 RPM = 4.8 rev/sec = 3.31 m/s
+target_voltage1 = 6V = 81.08%(Dp1) = 233 RPM = 3.8 rev/sec = 2.69 m/s
+target_voltage2 = 3V = 40.54%(Dp2) = 117 RPM = 1.95 rev/sec = 1.34 m/s
+
+Dp1 = 2.69/max_vel1 * 100
+max_vel1 = 3.32
+
+Dp2 = 1.34/max_vel2 * 100
+max_vel2 = 3.3
+
+so, we can use max_vel = ~3.3
