@@ -1,0 +1,128 @@
+# =============================================
+# ROBOT PHYSICAL PARAMETERS
+# =============================================
+# CRITICAL: Measure these accurately!
+# Incorrect values = incorrect odometry
+# =============================================
+
+pid_controller_node:
+  ros__parameters:
+
+    # =========================================
+    # WHEEL GEOMETRY (MEASURE CAREFULLY!)
+    # =========================================
+
+    # Wheel radius in meters
+    # [MEASURE] Use calipers for accuracy
+    wheel_radius: 0.11          # CORRECTED FROM DIAGNOSTICS
+
+    # Wheel base (distance between left and right wheel centers)
+    # [MEASURE] Center to center of wheels
+    wheel_base: 0.2175
+
+    # Track width (distance between front and rear wheel centers)  
+    # [MEASURE] Center to center of wheels
+    wheel_track: 0.2175
+
+    # =========================================
+    # ENCODER PARAMETERS
+    # =========================================
+
+    # Encoder ticks per revolution (before gear reduction)
+    # [CHECK] Look at encoder datasheet
+    encoder_ticks_per_rev: 1620
+
+    # Gear reduction ratio (motor:wheel)
+    # [CHECK] If motor spins 30 times for 1 wheel rotation, gear_ratio = 30
+    gear_ratio: 1.0
+    # Encoder direction correction (1 or -1)
+    # The ESP32 firmware already sign-corrects FL/BL before publishing
+    # /encoder_ticks, so keep these at 1 unless the firmware changes.
+    encoder_direction:
+      front_left: -1
+      front_right: 1
+      back_left: -1
+      back_right: 1
+
+    # =========================================
+    # VELOCITY LIMITS
+    # =========================================
+
+    # Maximum linear velocity (m/s)
+    # [SET] Based on your motor's max RPM
+    max_linear_velocity: 3.0
+
+    # Maximum angular velocity (rad/s)
+    max_angular_velocity: 5.0
+
+    # Maximum wheel velocity (m/s)
+    max_wheel_velocity: 3.0
+
+    # =========================================
+    # MOTOR PARAMETERS
+    # =========================================
+
+    # Motor dead zone (minimum command to move)
+    # [TUNE] Based on diagnostics (0.85 / 6.0 = 0.14)
+    motor_deadzone_pwm: 0.14
+
+    # PWM frequency for motor control
+    motor_pwm_frequency: 20000   # Hz
+
+    # =========================================
+    # IMU PARAMETERS
+    # =========================================
+
+    # IMU orientation offset (if mounted rotated)
+    imu_yaw_offset: 0.0          # radians
+
+    # IMU frame ID
+    imu_frame_id: "imu_link"
+
+    # =========================================
+    # ODOMETRY PARAMETERS
+    # =========================================
+
+    # Odometry frame IDs
+    odom_frame_id: "odom"
+    base_frame_id: "base_link"
+
+    # Publish TF?
+    publish_tf: true
+
+    # =========================================
+    # DIRECTIONAL WHEEL TRIM MULTIPLIERS (FL, FR, BL, BR)
+    # =========================================
+    # Use these to offset uneven load/speed differences on the ground.
+    # 1.0 = 100% target velocity (no scaling).
+    trim_forward:     [0.95, 1.0, 1.0, 0.96]
+    trim_backward:    [1.0, 1.08, 1.0, 0.91]
+    trim_left:        [1.0, 1.0, 1.0, 1.0]
+    trim_right:       [1.0, 1.09, 1.0, 0.92]
+    # Front-Left diagonal (vx>0 AND vy>0) — only FR (index 1) and BL (index 2) spin:
+    #   • FR (index 1): anti-clockwise from motor POV
+    #   • BL (index 2): clockwise from motor POV
+    #   • FL (index 0) and BR (index 3) are idle on this diagonal
+    # [TUNE] Adjust index 1 and 2 to balance front-left diagonal straight-line tracking.
+    trim_front_left:  [1.0, 1.0, 1.0, 1.0]
+    # Front-Right diagonal (vx>0 AND vy<0) — only FL (index 0) and BR (index 3) spin:
+    #   • FL (index 0): clockwise from motor POV
+    #   • BR (index 3): anti-clockwise from motor POV
+    #   • FR (index 1) and BL (index 2) are idle on this diagonal
+    # [TUNE] Adjust index 0 and 3 to balance front-right diagonal straight-line tracking.
+    trim_front_right: [1.0, 1.0, 1.0, 1.0]
+
+    # =========================================
+    # OMNI KINEMATICS MATRIX (45-deg)
+    # =========================================
+    # Pre-calculated based on your specified directions:
+    # Forward:           FL=-1, FR=+1, BL=-1, BR=+1
+    # Backward:          FL=+1, FR=-1, BL=+1, BR=-1
+    # Left:              FL=+1, FR=+1, BL=-1, BR=-1
+    # Right:             FL=-1, FR=-1, BL=+1, BR=+1
+    # Front-Left diag:   FL= 0, FR=anti-CW, BL=CW,    BR= 0   ← NEW
+    # Front-Right diag:  FL=CW, FR= 0,      BL= 0,    BR=anti-CW  ← NEW
+    # Rotate Left:       FL=+1, FR=+1, BL=+1, BR=-1
+    # Rotate Right:      FL=-1, FR=-1, BL=-1, BR=+1
+
+    # These are handled in code, but documented here for reference

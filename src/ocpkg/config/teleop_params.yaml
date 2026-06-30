@@ -1,0 +1,163 @@
+# =============================================
+# PS5 TELEOP CONFIGURATION
+# =============================================
+# Controller mapping for PS5 DualSense
+# =============================================
+
+ps5_teleop_node:
+  ros__parameters:
+
+    # =========================================
+    # JOYSTICK AXIS MAPPING
+    # =========================================
+    # PS5 DualSense typical axis layout:
+    # Axis 0: Left stick X (left/right strafe)
+    # Axis 1: Left stick Y (forward/backward)
+    # Axis 2: ESP32 right stick X
+    # Axis 3: ESP32 right stick Y
+    # Axis 4: L2 on ESP32, or right stick Y on some ROS drivers
+    # Axis 5: R2 trigger
+    #
+    # [CHECK] Run: ros2 topic echo /joy
+    # Move sticks to verify axis numbers
+
+    axis_linear_x: 1        # Forward/backward (left stick Y)
+    axis_linear_y: 0        # Left/right strafe (left stick X)
+    axis_angular_z: -1      # Right stick is reserved for mechanisms
+    axis_angular_z_fallback: -1
+
+    # Axis inversion (1 or -1)
+    # [TUNE] If movement is reversed, flip the sign
+    axis_linear_x_scale: 1.0   # Negative if pushing up gives negative
+    axis_linear_y_scale: -1.0   # Negative if pushing left gives negative
+    axis_angular_z_scale: -1.0  # Right stick right -> clockwise / negative ROS yaw
+
+    # =========================================
+    # BUTTON MAPPING
+    # =========================================
+    # PS5 DualSense typical button layout:
+    # Button 0: Cross (X)
+    # Button 1: Circle (O)
+    # Button 2: Square
+    # Button 3: Triangle
+    # Button 4: L1
+    # Button 5: R1
+    # Button 6: L2 (used by linear_rhino mechanism)
+    # Button 7: R2 (as button)
+    # Button 8: Share
+    # Button 9: Options
+    # Button 10: PS button
+    # Button 11: L3 (left stick press)
+    # Button 12: R3 (right stick press)
+    #
+    # [CHECK] Run: ros2 topic echo /joy
+    # Press buttons to verify IDs
+
+    # 90-degree rotation buttons
+    button_rotate_right_90: 1    # Circle - rotate 90° right
+    button_rotate_left_90: 2     # Square - rotate 90° left
+    button_rotate_left_hold: 5   # L1 - manual rotate left while held
+    button_rotate_right_hold: 4  # R1 - manual rotate right while held
+
+    # Speed mode buttons
+    button_turbo: 7             # R2 - turbo mode (faster)
+    # NOTE: button_slow (L2/button 6) removed — L2 is now linear_rhino in mechanism_node
+
+    # Emergency stop
+    button_emergency_stop: -1   # Disabled; L3 is used by mechanism controls
+
+    # =========================================
+    # SPEED SETTINGS
+    # =========================================
+
+    # Normal speed multipliers
+    speed_linear: 2.34           # Maps to 5V (Normal)
+    speed_angular: 3.45
+
+    # Turbo mode multipliers (when holding turbo button)
+    turbo_linear: 3.03           # Maps to 7V (Turbo)
+    turbo_angular: 3.56          # EXACTLY 3.0 rad/s as requested
+
+    # Slow/precision mode multipliers
+    slow_linear: 0.5
+    slow_angular: 1.0
+
+    # =========================================
+    # JOYSTICK DEAD ZONE
+    # =========================================
+    # Restored to prevent stick drift (Phantom movement)
+    deadzone: 0.15
+    strict_threshold: 0.15
+    axis_snap_ratio: 1.0
+    joy_timeout: 0.5
+
+    # =========================================
+    # FRONT-LEFT DIAGONAL ZONE
+    # =========================================
+    # When the left joystick is pushed to the front-left corner, BOTH
+    # linear_x (forward) and linear_y (left strafe) exceed this threshold
+    # simultaneously. The axis-snap is then BYPASSED so both components
+    # reach the inverse kinematics, producing true front-left diagonal motion.
+    #
+    # Mecanum wheel behaviour for front-left diagonal:
+    #   • FR  (wheel 2, index 1) — spins anti-clockwise from motor POV
+    #   • BL  (wheel 3, index 2) — spins clockwise from motor POV
+    #   • FL  (wheel 1, index 0) — idle
+    #   • BR  (wheel 4, index 3) — idle
+    #
+    # [TUNE] Lower value  → diagonal zone activates sooner (easier to trigger).
+    #        Higher value → requires a more deliberate corner push.
+    #        Recommended range: 0.20 – 0.40
+    front_left_diag_threshold: 0.25
+
+    # Mecanum wheel behaviour for front-right diagonal (vx>0, vy<0):
+    #   • FL  (wheel 1, index 0) — spins clockwise from motor POV
+    #   • BR  (wheel 4, index 3) — spins anti-clockwise from motor POV
+    #   • FR  (wheel 2, index 1) — idle
+    #   • BL  (wheel 3, index 2) — idle
+    #
+    # [TUNE] Same range as above: 0.20 – 0.40
+    front_right_diag_threshold: 0.25
+
+    # =========================================
+    # SMOOTHING
+    # =========================================
+    # Set to 1.0 (Instant) to bypass filtering
+    smoothing_factor: 1.0
+
+
+mechanism_node:
+  ros__parameters:
+    servo_min_deg: 0
+    servo_max_deg: 180
+    servo_initial_deg: 115
+    servo_step_deg: 1
+    update_period_ms: 20
+    right_stick_threshold: 0.35
+
+    # ESP32 /joy axes: axis 2 = right stick X, axis 3 = right stick Y
+    axis_servo4: 2
+    axis_servo5: 3
+
+    # Hold buttons
+    button_servo1_2_decrease: 0  # Cross
+    button_servo1_2_increase: 3  # Triangle
+    button_servo3_decrease: 11   # D-pad Up   (d & 0x01)
+    button_servo3_increase: 10   # D-pad Down (d & 0x02)
+
+    # Toggle buttons
+    # Linear actuator: Options forward; hold R2 first, then Options for reverse
+    button_linear_actuator_toggle: 8
+    button_pneumatic_gripper_toggle: 9
+
+    # Lead screw DC motor
+    button_lead_screw_positive: 12   # D-pad left
+    button_lead_screw_negative: 13   # D-pad right
+    button_turbo: 7                  # R2
+    lead_screw_speed: 1.5
+    lead_screw_turbo_speed: 3.0
+
+    # Linear Rhino DC motor
+    # button 6 (L2) forward; hold R2 first, then L2 for reverse
+    button_linear_rhino: 6
+    linear_rhino_speed: 0.7
