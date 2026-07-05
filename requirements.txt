@@ -1,0 +1,11 @@
+# rcBot - Python (pip) dependencies
+# ------------------------------------------------------------
+# NOTE: This is a ROS2 (ament_cmake) package. Most dependencies
+# (rclpy, std_msgs, sensor_msgs, geometry_msgs, nav_msgs, tf2_ros,
+# tf2_geometry_msgs, the `joy` package, micro_ros_agent) come from
+# your ROS2 distro install (e.g. apt install ros-<distro>-*) and
+# CANNOT be installed via pip. Install ROS2 (Humble/Jazzy) first,
+# then use this file only for the extra pure-Python packages below.
+# ------------------------------------------------------------
+
+numpy>=1.21
