@@ -14,9 +14,9 @@ Because there are **three ESP32s**, there are **three independent micro-ROS agen
 
 | ESP | Serial Port | Baud |
 |---|---|---|
-| ESP1 — Drive (`DriveSpec.ino`) | `/dev/ttyUSB0` | 115200 |
-| ESP2 — IMU (`IMUspec.ino`) | `/dev/ttyUSB1` | 115200 |
-| ESP3 — Mechanism (`Mech.ino`) | `/dev/ttyUSB2` | 115200 |
+| ESP1 — Drive (`DriveSpec.ino`) | `/dev/ttyUSB0` | 921600 |
+| ESP2 — IMU (`IMUspec.ino`) | `/dev/ttyUSB1` | 921600 |
+| ESP3 — Mechanism (`Mech.ino`) | `/dev/ttyUSB2` | 921600 |
 
 > Port numbers are examples — confirm actual `/dev/ttyUSBx` assignment on your machine with `ls /dev/ttyUSB*` or `dmesg | grep tty` after plugging in, since Linux assigns them by enumeration order, not by ESP identity.
 
