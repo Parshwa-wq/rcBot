@@ -63,13 +63,13 @@ Because there are **three ESP32s**, there are **three independent micro-ROS agen
 3. **Start three micro-ROS agents**, one per ESP32 (run each in its own terminal, or as separate background processes):
    ```bash
    # ESP1 — Drive (motors, encoders, PS5 controller via Bluepad32)
-   ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB0 -b 115200
+   ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB0 
 
    # ESP2 — IMU
-   ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB1 -b 115200
+   ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB1 
 
    # ESP3 — Mechanism (servos, gripper, actuator, lead screw)
-   ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB2 -b 115200
+   ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB2 
    ```
    All three must be up and connected (agent state `AGENT_CONNECTED`) before launching the main stack, otherwise the corresponding topics simply won't populate.
 
